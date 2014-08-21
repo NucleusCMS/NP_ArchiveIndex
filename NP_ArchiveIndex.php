@@ -25,13 +25,6 @@
 		[ADD] Blog option.
 */
 
-// plugin needs to work on Nucleus versions <=2.0 as well
-if (!function_exists('sql_table')){
-	function sql_table($name) {
-		return 'nucleus_' . $name;
-	}
-}
-
 class NP_ArchiveIndex extends NucleusPlugin {
 
 	function getName() { return 'Archive Index'; }
@@ -39,14 +32,7 @@ class NP_ArchiveIndex extends NucleusPlugin {
 	function getURL() { return 'http://works.datoka.jp/index.php?itemid=167'; }
 	function getVersion() { return '0.81'; }
 	function getMinNucleusVersion() { return 220; }
-	function supportsFeature($what) {
-		switch($what){
-			case 'SqlTablePrefix':
-				return 1;
-			default:
-				return 0;
-		}
-	}
+	function supportsFeature($what) { return in_array($what, array('SqlTablePrefix'));}
 
 	// a description to be shown on the installed plugins listing
 	function getDescription() { 
@@ -56,43 +42,124 @@ class NP_ArchiveIndex extends NucleusPlugin {
 	function install() {
 		
 		// global option
-		$this->createOption('itemOrder', 'Order of title (index)', 'select', 'time,DESC', 'title,DESC|title,DESC|title,ASC|title,ASC|time,DESC|time,DESC|time,ASC|time,ASC');
-		$this->createOption('itemOrder2', 'Order of title (when a category is selected)', 'select', 'time,DESC', 'title,DESC|title,DESC|title,ASC|title,ASC|time,DESC|time,DESC|time,ASC|time,ASC');
-		$this->createOption('catDesc','Show category description.','yesno','yes');
-		$this->createOption('flg_showupd','Show update information (NP_UpdateTime).','yesno','no');
-		$this->createOption('flg_sortupd','Sort with update information (NP_UpdateTime).','yesno','no');
-		$this->createOption('idateFormat','Date format for item list','text','Y-m-d H:i');
+		$this->createOption(
+			'itemOrder',
+			'Order of title (index)',
+			'select',
+			'time,DESC', 'title,DESC|title,DESC|title,ASC|title,ASC|time,DESC|time,DESC|time,ASC|time,ASC');
+		$this->createOption(
+			'itemOrder2',
+			'Order of title (when a category is selected)',
+			'select',
+			'time,DESC', 'title,DESC|title,DESC|title,ASC|title,ASC|time,DESC|time,DESC|time,ASC|time,ASC');
+		$this->createOption(
+			'catDesc',
+			'Show category description.',
+			'yesno',
+			'yes');
+		$this->createOption(
+			'flg_showupd',
+			'Show update information (NP_UpdateTime).',
+			'yesno',
+			'no');
+		$this->createOption(
+			'flg_sortupd',
+			'Sort with update information (NP_UpdateTime).',
+			'yesno',
+			'no');
+		$this->createOption(
+			'idateFormat',
+			'Date format for item list',
+			'text',
+			'Y-m-d H:i');
 		
-		$this->createOption('tempListBegin','Template: List (begin)','text','<table><thead title="%catdesc%"><tr><th colspan="2"><a href="%caturl%">%catname%</a></th></tr></thead><tbody>');
-		$this->createOption('tempListElement','Template: List element','text','<tr%bg%><td><span class="title%up%">%titlelink%</span></td><td class="detail">%detail%</td></tr>');
-		$this->createOption('tempListMore','Template: List element (morelink)','text','<tr class="more"><td>%pagenavi%</td><td class="detail">%morelink%</td></tr>');
-		$this->createOption('tempListEnd','Template: List (end)','text','</tbody></table>');
+		$this->createOption(
+			'tempListBegin',
+			'Template: List (begin)',
+			'textarea',
+			'<table><thead title="%catdesc%"><tr><th colspan="2"><a href="%caturl%">%catname%</a></th></tr></thead><tbody>');
+		$this->createOption(
+			'tempListElement',
+			'Template: List element',
+			'textarea',
+			'<tr%bg%><td><span class="title%up%">%titlelink%</span></td><td class="detail">%detail%</td></tr>');
+		$this->createOption(
+			'tempListMore',
+			'Template: List element (morelink)',
+			'textarea',
+			'<tr class="more"><td>%pagenavi%</td><td class="detail">%morelink%</td></tr>');
+		$this->createOption(
+			'tempListEnd',
+			'Template: List (end)',
+			'textarea',
+			'</tbody></table>');
 		
 		// blog option
-		$this->createBlogOption('switch','Use blog option?','yesno','no');
-		$this->createBlogOption('itemOrder', 'Order of title (index)', 'select', 'time,DESC', 'title,DESC|title,DESC|title,ASC|title,ASC|time,DESC|time,DESC|time,ASC|time,ASC');
-		$this->createBlogOption('itemOrder2', 'Order of title (when a category is selected)', 'select', 'time,DESC', 'title,DESC|title,DESC|title,ASC|title,ASC|time,DESC|time,DESC|time,ASC|time,ASC');
-		$this->createBlogOption('catDesc','Show category description.','yesno','yes');
-		$this->createBlogOption('flg_showupd','Show update information (NP_UpdateTime).','yesno','no');
-		$this->createBlogOption('flg_sortupd','Sort with update information (NP_UpdateTime).','yesno','no');
-		$this->createBlogOption('idateFormat','Date format for item list','text','Y-m-d H:i');
-		
-		$this->createBlogOption('tempListBegin','Template: List (begin)','text','<table><thead title="%catdesc%"><th><a href="%caturl%">%catname%</a></th><th></th></thead><tbody>');
-		$this->createBlogOption('tempListElement','Template: List element','text','<tr %bg%><td><span class="title%up%">%titlelink%</span></td><td class="detail">%detail%</td></tr>');
-		$this->createBlogOption('tempListMore','Template: List element (morelink)','text','<tr class="more"><td>%pagenavi%</td><td class="detail">%morelink%</td></tr>');
-		$this->createBlogOption('tempListEnd','Template: List (end)','text','</tbody></table>');
+		$this->createBlogOption(
+			'switch',
+			'Use blog option?',
+			'yesno',
+			'no');
+		$this->createBlogOption(
+			'itemOrder',
+			'Order of title (index)',
+			'select',
+			'time,DESC', 'title,DESC|title,DESC|title,ASC|title,ASC|time,DESC|time,DESC|time,ASC|time,ASC');
+		$this->createBlogOption(
+			'itemOrder2',
+			'Order of title (when a category is selected)',
+			'select',
+			'time,DESC', 'title,DESC|title,DESC|title,ASC|title,ASC|time,DESC|time,DESC|time,ASC|time,ASC');
+		$this->createBlogOption(
+			'catDesc',
+			'Show category description.',
+			'yesno',
+			'yes');
+		$this->createBlogOption(
+			'flg_showupd',
+			'Show update information (NP_UpdateTime).',
+			'yesno',
+			'no');
+		$this->createBlogOption(
+			'flg_sortupd',
+			'Sort with update information (NP_UpdateTime).',
+			'yesno',
+			'no');
+		$this->createBlogOption(
+			'idateFormat',
+			'Date format for item list',
+			'text',
+			'Y-m-d H:i');
+		$this->createBlogOption(
+			'tempListBegin',
+			'Template: List (begin)',
+			'textarea',
+			'<table><thead title="%catdesc%"><th><a href="%caturl%">%catname%</a></th><th></th></thead><tbody>');
+		$this->createBlogOption(
+			'tempListElement',
+			'Template: List element',
+			'textarea',
+			'<tr %bg%><td><span class="title%up%">%titlelink%</span></td><td class="detail">%detail%</td></tr>');
+		$this->createBlogOption(
+			'tempListMore',
+			'Template: List element (morelink)',
+			'textarea',
+			'<tr class="more"><td>%pagenavi%</td><td class="detail">%morelink%</td></tr>');
+		$this->createBlogOption(
+			'tempListEnd',
+			'Template: List (end)',
+			'textarea',
+			'</tbody></table>');
 	}
 	
-	function unInstall() {
-		//nothing to do
-	}
-
 	function doSkinVar($skinType, $amount, $pamount=10, $show_catdesc='') { 
 		global $manager, $member, $blog, $CONF, $catid, $itemid; 
 		
 		if ($blog) $b =& $blog; 
 		else $b =& $manager->getBlog($CONF['DefaultBlog']);
 		$bid = $b->getID();
+		
+		$prefix = sql_table('');
 		
 		// get global option
 		$op_itemOrder =        $this->getOption('itemOrder');
@@ -108,31 +175,29 @@ class NP_ArchiveIndex extends NucleusPlugin {
 		
 		// get blog option
 		if ($this->getBlogOption($bid, 'switch') == 'yes') {
-			$op_itemOrder =        $this->getBlogOption($bid, 'itemOrder');
-			$op_itemOrder2 =       $this->getBlogOption($bid, 'itemOrder2');
-			$op_catDesc =          $this->getBlogOption($bid, 'catDesc');
-			$op_flg_showupd =      $this->getBlogOption($bid, 'flg_showupd');
-			$op_flg_sortupd =      $this->getBlogOption($bid, 'flg_sortupd');
-			$op_idateFormat =      $this->getBlogOption($bid, 'idateFormat');
-			$op_tempListBegin =    $this->getBlogOption($bid, 'tempListBegin');
-			$op_tempListElement =  $this->getBlogOption($bid, 'tempListElement');
-			$op_tempListMore =     $this->getBlogOption($bid, 'tempListMore');
-			$op_tempListEnd =      $this->getBlogOption($bid, 'tempListEnd');
+			$op_itemOrder =       $this->getBlogOption($bid, 'itemOrder');
+			$op_itemOrder2 =      $this->getBlogOption($bid, 'itemOrder2');
+			$op_catDesc =         $this->getBlogOption($bid, 'catDesc');
+			$op_flg_showupd =     $this->getBlogOption($bid, 'flg_showupd');
+			$op_flg_sortupd =     $this->getBlogOption($bid, 'flg_sortupd');
+			$op_idateFormat =     $this->getBlogOption($bid, 'idateFormat');
+			$op_tempListBegin =   $this->getBlogOption($bid, 'tempListBegin');
+			$op_tempListElement = $this->getBlogOption($bid, 'tempListElement');
+			$op_tempListMore =    $this->getBlogOption($bid, 'tempListMore');
+			$op_tempListEnd =     $this->getBlogOption($bid, 'tempListEnd');
 		}
 		
-		if (!is_numeric($amount)) $amount = 5;
+		if (!is_numeric($amount))  $amount  = 5;
 		if (!is_numeric($pamount)) $pamount = 10;
 		
 		if ($show_catdesc == '') {
-			if ($op_catDesc == 'yes') $show_catdesc = 'desc';
+			if ($op_catDesc === 'yes') $show_catdesc = 'desc';
 			else $show_catdesc = 'none';
 		}
 		
-		if ($blog) { 
-			$b =& $blog; 
-		} else { 
-			$b =& $manager->getBlog($CONF['DefaultBlog']); 
-		} 
+		if ($blog) $b =& $blog;
+		else       $b =& $manager->getBlog($CONF['DefaultBlog']);
+		
 		$blogid = $b->getID();
 
 		if ($catid) {
@@ -167,10 +232,9 @@ class NP_ArchiveIndex extends NucleusPlugin {
 		}
 		if ($flg_showupdate or $flg_sortupdate) {
 			//get update info
-			$query = 'SELECT r.up_id as itemid, UNIX_TIMESTAMP(r.updatetime) as utime, i.itime as itime FROM '.sql_table('plugin_rectime') . ' as r, '.sql_table('item') .' as i WHERE r.up_id=i.inumber and r.updatetime>i.itime'
-				. ' ORDER BY itemid ASC';
+			$query = "SELECT r.up_id as itemid, UNIX_TIMESTAMP(r.updatetime) as utime, i.itime as itime FROM {$prefix}plugin_rectime as r, {$prefix}item as i WHERE r.up_id=i.inumber and r.updatetime>i.itime ORDER BY itemid ASC";
 			$ut_res = sql_query($query);
-			while ($utinfo = mysql_fetch_object($ut_res)) {
+			while ($utinfo = sql_fetch_object($ut_res)) {
 				if ($catid and 
 					$catid != $this->_getCategoryIDFromItemID($utinfo->itemid)) continue;
 				$up_ids[] = $utinfo->itemid;
@@ -178,7 +242,7 @@ class NP_ArchiveIndex extends NucleusPlugin {
 				if ($flg_sortupdate) $up_datetimes[$utinfo->itemid] = $utinfo->itime; // for title prop.
 				else $up_datetimes[$utinfo->itemid] = date($idateformat, $utinfo->utime);
 			}
-			mysql_free_result($ut_res);
+			sql_free_result($ut_res);
 		}
 		
 		if ($flg_sortupdate and count($up_ids)) {
@@ -186,29 +250,31 @@ class NP_ArchiveIndex extends NucleusPlugin {
 			$str_up_tstamps = join(',', $up_tstamps);
 			
 			//select
-			$query = 'SELECT inumber, ititle, icat, IF(inumber IN('.$str_up_ids.'), ELT(INTERVAL(inumber,'.$str_up_ids.'), '.$str_up_tstamps.'), UNIX_TIMESTAMP(itime)) as itime, iauthor FROM '.sql_table('item');
+			$query = sprintf(
+				'SELECT inumber,ititle,icat,IF(inumber IN(%s),ELT(INTERVAL(inumber,%s),%s), UNIX_TIMESTAMP(itime)) AS itime,iauthor FROM %sitem',
+				$str_up_ids, $str_up_ids, join(',', $up_tstamps), $prefix);
 		}
 		else {
-			$query = 'SELECT inumber, ititle, icat, UNIX_TIMESTAMP(itime) as itime, iauthor FROM '.sql_table('item');
+			$query = "SELECT inumber, ititle, icat, UNIX_TIMESTAMP(itime) AS itime, iauthor FROM {$prefix}item";
 		}
 		
-		$query .= ' WHERE iblog=' . $blogid
-			.' and UNIX_TIMESTAMP(itime)<='. $now .' and idraft=0';
+		$query .= " WHERE iblog={$blogid} AND UNIX_TIMESTAMP(itime)<={$now} AND idraft=0";
 		
 		if ($catid) {
 			$query .= ' and icat=' . intval($catid);
 			
 			//item count in the category
 			$resnum = sql_query($query);
-			$itemnum = mysql_num_rows($resnum);
-			mysql_free_result($resnum);
+			$itemnum = sql_num_rows($resnum);
+			sql_free_result($resnum);
 			$pagemax = ceil($itemnum / $pamount);
 		}
 		
 		if ($itarget == 'title') $query .= ' ORDER BY ititle';
-		else $query .= ' ORDER BY itime';
-		if ($iorder == 'asc') $query .= ' ASC';
-		else $query .= ' DESC';
+		else                     $query .= ' ORDER BY itime';
+		
+		if ($iorder == 'asc')    $query .= ' ASC';
+		else                     $query .= ' DESC';
 		
 		if ($catid) {
 			if ($page < 1) $page = 1;
@@ -220,8 +286,8 @@ class NP_ArchiveIndex extends NucleusPlugin {
 		//set data by category
 		$list_cat  = array();
 		$list_item = array();
-		$cnt_item = array();
-		while ($current = mysql_fetch_object($res)) {
+		$cnt_item  = array();
+		while ($current = sql_fetch_object($res)) {
 			$cnt_item[$current->icat]++;
 			if (!$catid and $cnt_item[$current->icat] > $amount) { //check the amount
 				continue;
@@ -231,11 +297,11 @@ class NP_ArchiveIndex extends NucleusPlugin {
 			$idetail = date($idateformat, $current->itime); //itemdate
 			
 			$list_cat[$current->icat][] = $inumber;
-			$list_item[$inumber]['ititle']   = htmlspecialchars(strip_tags($current->ititle));
+			$list_item[$inumber]['ititle']   = htmlspecialchars(strip_tags($current->ititle),ENT_QUOTES,_CHARSET);
 			$list_item[$inumber]['itemlink'] = createItemLink($inumber,$this->linkparams);
 			$list_item[$inumber]['idetail']  = $idetail;
 		}
-		mysql_free_result($res);
+		sql_free_result($res);
 		
 		//prepare list by category
 		$arr_out = array();
@@ -260,7 +326,7 @@ class NP_ArchiveIndex extends NucleusPlugin {
 			foreach ($arr_icat as $inumber) {
 				//buffer item title
 				$ititle   = $list_item[$inumber]['ititle'];
-				if (empty($ititle)) $ititle = '(no title)'; 
+				if (empty($ititle)) $ititle = '(no title)';
 				$itemlink = $list_item[$inumber]['itemlink'];
 				$idetail  = $list_item[$inumber]['idetail'];
 				$bg = '';
@@ -270,15 +336,15 @@ class NP_ArchiveIndex extends NucleusPlugin {
 				if ($icnt % 2 == 1) $bg = " class='stripe'";
 				if (count($up_ids) and in_array($inumber, $up_ids)) {
 					if($flg_showupdate) $upstr = '-up ';
-					if($flg_sortupdate) $titledesc = " title='Posted on ". $up_datetimes[$inumber] ."'";
+					if($flg_sortupdate) $titledesc = sprintf(" title='Posted on %s'", $up_datetimes[$inumber]);
 					else $titledesc = " title='Updated on ". $up_datetimes[$inumber] ."'";
 				}
-				$titlelink = "<a href='$itemlink' $titledesc>$ititle</a>";
+				$titlelink = sprintf('<a href="%s" %s>%s</a>', $itemlink, $titledesc, $ititle);
 				
 				$temp_list_el = $op_tempListElement;
-				$rep_from = array('/%bg%/','/%titlelink%/','/%detail%/','/%up%/');
+				$rep_from = array('%bg%','%titlelink%','%detail%','%up%');
 				$rep_to   = array($bg, $titlelink, $idetail, $upstr);
-				$temp_list_el = preg_replace($rep_from, $rep_to, $temp_list_el);
+				$temp_list_el = str_replace($rep_from, $rep_to, $temp_list_el);
 				$arr_title[]  = $temp_list_el."\n";
 				
 				$icnt++;
@@ -289,26 +355,26 @@ class NP_ArchiveIndex extends NucleusPlugin {
 			if (!$catid) {
 				if ($cnt_item[$icat] <= $amount) { // category description
 					$arclist_link = '<span class="nomore">&raquo; More</span>';
-					if ($show_catdesc == 'desc') $icatDescStr = '<span class="catdesc">'.$icatDesc.'</span>';
+					if ($show_catdesc == 'desc') $icatDescStr = sprintf('<span class="catdesc">%s</span>', $icatDesc);
 					else $icatDescStr = '';
 					
 					$temp_list_more = $op_tempListMore;
-					$rep_from = array('/%pagenavi%/','/%morelink%/');
+					$rep_from = array('%pagenavi%','%morelink%');
 					$rep_to   = array($icatDescStr, $arclist_link);
-					$temp_list_more = preg_replace($rep_from, $rep_to, $temp_list_more);
-					$arr_title[] = "$temp_list_more\n"; 
+					$temp_list_more = str_replace($rep_from, $rep_to, $temp_list_more);
+					$arr_title[] = "$temp_list_more\n";
 				}
 				else { // category description with more link
 					$extra = array('catid' => $icat);
-					$arclist_link = '<a href="'. createArchiveListLink($blogid, $extra) .'">&raquo; More</a>';
-					if ($show_catdesc == 'desc') $icatDescStr = '<span class="catdesc">'.$icatDesc.'</span>';
+					$arclist_link = sprintf('<a href="%s">&raquo; More</a>', createArchiveListLink($blogid, $extra));
+					if ($show_catdesc == 'desc') $icatDescStr = sprintf('<span class="catdesc">%s</span>', $icatDesc);
 					else $icatDescStr = '';
 					
 					$temp_list_more = $op_tempListMore;
-					$rep_from = array('/%pagenavi%/','/%morelink%/');
+					$rep_from = array('%pagenavi%','%morelink%');
 					$rep_to   = array($icatDescStr, $arclist_link);
-					$temp_list_more = preg_replace($rep_from, $rep_to, $temp_list_more);
-					$arr_title[] = "$temp_list_more\n"; 
+					$temp_list_more = str_replace($rep_from, $rep_to, $temp_list_more);
+					$arr_title[] = "$temp_list_more\n";
 				}
 			}
 			else { // sort order, page navi and all category link
@@ -335,54 +401,53 @@ class NP_ArchiveIndex extends NucleusPlugin {
 				
 				$orderURL1 = $orderURL . "$itarget_flip+$itarget_flip_order";
 				$orderURL2 = $orderURL . "$itarget+$iorder_flip";
-				$pagenavi = "Sort: <strong>$itarget</strong>/<a href='$orderURL1'>$itarget_flip</a>, ";
-				$pagenavi.= "<strong>$iorder_str</strong>/<a href='$orderURL2'>$iorder_flip_str</a>";
+				$pagenavi = sprintf('Sort: <strong>%s</strong>/<a href="%s">%s</a>, ', $itarget, $orderURL1, $itarget_flip);
+				$pagenavi.= sprintf('<strong>%s</strong>/<a href="%s">%s</a>', $iorder_str, $orderURL2, $iorder_flip_str);
 				
 				//make 'page navi link'
 				$pagenavi.= "&nbsp;&nbsp; Page:";
 				for ($i=1; $i<=$pagemax; $i++) {
-					if ($i==$page) $pagenavi.= "<strong>&nbsp;$i&nbsp;</strong>";
+					if ($i==$page) $pagenavi.= '<strong>&nbsp;$i&nbsp;</strong>';
 					else {
 						$pageURL = serverVar('REQUEST_URI');
 						$pageURL = preg_replace('/([?&]ap=)[0-9]*/','',$pageURL);
 						if (strpos($pageURL,'?')===false) $pageURL .= "?ap=$i";
 						else $pageURL .= "&ap=$i";
-						$pagenavi.= "<a href='$pageURL'>&nbsp;$i&nbsp;</a>";
+						$pagenavi.= sprintf('<a href="%s">&nbsp;%s&nbsp;</a>', $pageURL, $i);
 					}
 				}
 				//and make 'all category link'
-				$arclist_link = '<a href="'. createArchiveListLink($blogid) .'">&raquo; Back to index</a>';
+				$arclist_link = sprintf('<a href="%s">&raquo; Back to index</a>', createArchiveListLink($blogid));
 				
 				$temp_list_more = $op_tempListMore;
-				$rep_from = array('/%pagenavi%/','/%morelink%/');
+				$rep_from = array('%pagenavi%','%morelink%');
 				$rep_to   = array($pagenavi, $arclist_link);
-				$temp_list_more = preg_replace($rep_from, $rep_to, $temp_list_more);
+				$temp_list_more = str_replace($rep_from, $rep_to, $temp_list_more);
 				$arr_title[] = "$temp_list_more\n";
 			}
 			
-			$arr_out[$icatName] .= 
-				$temp_list_b ."\n". join('',$arr_title) . $temp_list_e ."\n";
+			$arr_out[$icatName] .= sprintf("%s\n%s%s\n", $temp_list_b, join('',$arr_title), $temp_list_e);
 		} //end of foreach
 		
 		//sort by category
 		if ($manager->pluginInstalled('NP_ContentsList')) {
 			$plugin =& $manager->getPlugin('NP_ContentsList');
 			if ($plugin) {
-				$query = 'SELECT rid as catid FROM '. sql_table('plug_contentslist_rank') .' WHERE blog=0 AND rank<20 ORDER BY rank ASC'; // you can delete 'AND rank<20'
-				$cl_res = sql_query($query); 
+				// you can delete 'AND rank<20'
+				$query = "SELECT rid as catid FROM '. {$prefix}plug_contentslist_rank WHERE blog=0 AND rank<20 ORDER BY rank ASC";
+				$cl_res = sql_query($query);
 				
 				$arr_out2 = $arr_out;
 				$arr_out = array();
-				while ($clrank = mysql_fetch_object($cl_res)) {
+				while ($clrank = sql_fetch_object($cl_res))
+				{
 					$icatName = $b->getCategoryName($clrank->catid);
 					$arr_out[] = $arr_out2[$icatName];
 				}
 				$arr_out2 = '';
 			}
 		}
-		else {
-			ksort($arr_out);
-		}
+		else ksort($arr_out);
 		
 		//flush the buffer
 		foreach ($arr_out as $value) {
@@ -398,4 +463,3 @@ class NP_ArchiveIndex extends NucleusPlugin {
 	}
 
 } //end of class
-?>
