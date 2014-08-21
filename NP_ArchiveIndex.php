@@ -29,8 +29,8 @@ class NP_ArchiveIndex extends NucleusPlugin {
 
 	function getName() { return 'Archive Index'; }
 	function getAuthor()  { return 'nakahara21 + yu'; }
-	function getURL() { return 'http://works.datoka.jp/index.php?itemid=167'; }
-	function getVersion() { return '0.81'; }
+	function getURL() { return 'http://japan.nucleuscms.org/wiki/plugins:archiveindex'; }
+	function getVersion() { return '0.9'; }
 	function getMinNucleusVersion() { return 220; }
 	function supportsFeature($what) { return in_array($what, array('SqlTablePrefix'));}
 
