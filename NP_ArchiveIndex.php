@@ -209,15 +209,15 @@ class NP_ArchiveIndex extends NucleusPlugin {
 		if ($catid) {
 			$item_order = requestVar('ao');
 			//check value (also used to make flip link)
-			list($itarget, $iorder) = @split(' ',$item_order);
+			list($itarget, $iorder) = explode(' ',$item_order);
 			if(!($itarget=='time' or $itarget=='title' or $iorder =='desc'  or $iorder =='asc')) {
 				$item_order = $op_itemOrder2;
-				list($itarget, $iorder) = @split(',',$item_order);
+				list($itarget, $iorder) = explode(',',$item_order);
 			}
 		}
 		else {
 			$item_order = $op_itemOrder;
-			list($itarget, $iorder) = @split(',',$item_order);
+			list($itarget, $iorder) = explode(',',$item_order);
 		}
 		$iorder = strtolower($iorder);
 		
