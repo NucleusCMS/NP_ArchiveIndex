@@ -434,7 +434,7 @@ class NP_ArchiveIndex extends NucleusPlugin {
 			$plugin =& $manager->getPlugin('NP_ContentsList');
 			if ($plugin) {
 				// you can delete 'AND rank<20'
-				$query = "SELECT rid as catid FROM '. {$prefix}plug_contentslist_rank WHERE blog=0 AND rank<20 ORDER BY rank ASC";
+				$query = "SELECT rid as catid FROM {$prefix}plug_contentslist_rank WHERE blog=0 AND rank<20 ORDER BY rank ASC";
 				$cl_res = sql_query($query);
 				
 				$arr_out2 = $arr_out;
